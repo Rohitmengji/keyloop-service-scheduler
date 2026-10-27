@@ -1,0 +1,103 @@
+# Executable API walkthrough for the VS Code REST Client extension, Visual Studio 2022+ or JetBrains Rider.
+# Start the API first:  dotnet run --project src/ServiceScheduler.Api
+# Requests 4-7 reuse values from earlier responses, so run them in order.
+
+@baseUrl = http://localhost:5080
+@manchester = de000000-0000-0000-0000-000000000001
+@pune = de000000-0000-0000-0000-000000000002
+@oilChange = 5e000000-0000-0000-0000-000000000001
+@mot = 5e000000-0000-0000-0000-000000000002
+@evHealthCheck = 5e000000-0000-0000-0000-000000000005
+@samTaylor = c0000000-0000-0000-0000-000000000001
+@samFocus = ca000000-0000-0000-0000-000000000001
+@emmaWilson = c0000000-0000-0000-0000-000000000002
+@emmaGolf = ca000000-0000-0000-0000-000000000003
+@arjunMehta = c0000000-0000-0000-0000-000000000003
+@arjunCreta = ca000000-0000-0000-0000-000000000004
+
+### 1. Service catalogue (codes and durations)
+GET {{baseUrl}}/api/v1/service-types
+
+### 2. Dealerships with their active bays and technicians' qualifications
+GET {{baseUrl}}/api/v1/dealerships
+
+### 3. Free start times for an oil change in Manchester (defaults to tomorrow, local time)
+# @name availability
+GET {{baseUrl}}/api/v1/dealerships/{{manchester}}/availability?serviceTypeId={{oilChange}}
+
+### 4. Book the first free start. Sending this again with the same key replays the original (Idempotent-Replayed: true).
+#    Change the key before booking a different slot, otherwise the API returns 422 idempotency_key_reused.
+# @name booking
+POST {{baseUrl}}/api/v1/appointments
+Content-Type: application/json
+Idempotency-Key: walkthrough-booking-1
+
+{
+  "dealershipId": "{{manchester}}",
+  "customerId": "{{samTaylor}}",
+  "vehicleId": "{{samFocus}}",
+  "serviceTypeId": "{{oilChange}}",
+  "startTime": "{{availability.response.body.$.slots[0].start}}",
+  "notes": "Customer will wait on site"
+}
+
+### 5. A second car at the same time takes the other bay
+# @name second
+POST {{baseUrl}}/api/v1/appointments
+Content-Type: application/json
+
+{
+  "dealershipId": "{{manchester}}",
+  "customerId": "{{emmaWilson}}",
+  "vehicleId": "{{emmaGolf}}",
+  "serviceTypeId": "{{oilChange}}",
+  "startTime": "{{availability.response.body.$.slots[0].start}}"
+}
+
+### 6. A third car at the same time: 409 service_bay_unavailable (only two bays are active)
+POST {{baseUrl}}/api/v1/appointments
+Content-Type: application/json
+
+{
+  "dealershipId": "{{manchester}}",
+  "customerId": "{{arjunMehta}}",
+  "vehicleId": "{{arjunCreta}}",
+  "serviceTypeId": "{{oilChange}}",
+  "startTime": "{{availability.response.body.$.slots[0].start}}"
+}
+
+### 7. Read the first appointment back
+GET {{baseUrl}}/api/v1/appointments/{{booking.response.body.$.id}}
+
+### 8. Cancel it (safe to repeat); its bay and technician become free again
+POST {{baseUrl}}/api/v1/appointments/{{booking.response.body.$.id}}/cancel
+
+### 9. Clean up the second booking
+POST {{baseUrl}}/api/v1/appointments/{{second.response.body.$.id}}/cancel
+
+### 10. Validation: a timestamp without a UTC offset is rejected with 400
+POST {{baseUrl}}/api/v1/appointments
+Content-Type: application/json
+
+{
+  "dealershipId": "{{manchester}}",
+  "customerId": "{{samTaylor}}",
+  "vehicleId": "{{samFocus}}",
+  "serviceTypeId": "{{oilChange}}",
+  "startTime": "2026-11-02T09:00:00"
+}
+
+### 11. Business rule: Pune has no MOT-qualified technician, so 422 no_qualified_technician
+POST {{baseUrl}}/api/v1/appointments
+Content-Type: application/json
+
+{
+  "dealershipId": "{{pune}}",
+  "customerId": "{{arjunMehta}}",
+  "vehicleId": "{{arjunCreta}}",
+  "serviceTypeId": "{{mot}}",
+  "startTime": "{{availability.response.body.$.date}}T10:00:00+05:30"
+}
+
+### 12. Health probes
+GET {{baseUrl}}/health/ready
