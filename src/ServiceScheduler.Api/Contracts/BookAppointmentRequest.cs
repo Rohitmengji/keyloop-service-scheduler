@@ -35,6 +35,7 @@ public sealed record BookAppointmentRequest
     public DateTimeOffset? StartTime { get; init; }
 
     /// <summary>Optional note for the workshop.</summary>
+    /// <example>Customer will wait on site</example>
     [MaxLength(Appointment.NotesMaxLength)]
     public string? Notes { get; init; }
 
