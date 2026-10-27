@@ -20,6 +20,7 @@ signals work with New Relic, Grafana, Azure Monitor, Datadog or the .NET Aspire 
 | 2001 | Information | Demo data seeded | — |
 | 3001 | Error | Unhandled exception | Method, Path, exception |
 | 3002 | Debug | Client aborted the request | Method, Path |
+| 3003 | Information | Request rejected by the server (for example 413 body too large) | Method, Path, StatusCode |
 
 EF Core SQL logging is off by default; set `Logging:LogLevel:Microsoft.EntityFrameworkCore.Database.Command` to
 `Information` to see every query while developing.

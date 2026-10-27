@@ -55,7 +55,7 @@ Headers: `Content-Type: application/json`; optional `Idempotency-Key` (1-100 vis
   "customerId": "c0000000-0000-0000-0000-000000000001",
   "vehicleId": "ca000000-0000-0000-0000-000000000002",
   "serviceTypeId": "5e000000-0000-0000-0000-000000000005",
-  "startTime": "2026-10-28T09:00:00Z",
+  "startTime": "2026-11-02T09:00:00Z",
   "notes": "Customer will wait on site"
 }
 ```
@@ -66,8 +66,8 @@ Headers: `Content-Type: application/json`; optional `Idempotency-Key` (1-100 vis
 {
   "id": "01a17939-7363-7639-a204-716b62a9773f",
   "status": "Confirmed",
-  "start": "2026-10-28T09:00:00+00:00",
-  "end": "2026-10-28T09:30:00+00:00",
+  "start": "2026-11-02T09:00:00+00:00",
+  "end": "2026-11-02T09:30:00+00:00",
   "timeZone": "Europe/London",
   "dealership": { "id": "de000000-0000-0000-0000-000000000001", "name": "Northgate Motors Manchester" },
   "customer": { "id": "c0000000-0000-0000-0000-000000000001", "name": "Sam Taylor" },
@@ -76,7 +76,7 @@ Headers: `Content-Type: application/json`; optional `Idempotency-Key` (1-100 vis
   "serviceBay": { "id": "ba000000-0000-0000-0000-000000000001", "name": "Bay 1" },
   "technician": { "id": "7e000000-0000-0000-0000-000000000003", "name": "Chloe Davies" },
   "notes": "Customer will wait on site",
-  "createdAtUtc": "2026-10-26T17:19:30.659+00:00",
+  "createdAtUtc": "2026-11-01T12:00:00+00:00",
   "cancelledAtUtc": null
 }
 ```
@@ -139,7 +139,7 @@ Example problem document:
 | 422 | `no_qualified_technician` | Nobody at the dealership is qualified for the service. |
 | 422 | `idempotency_key_reused` | The key was already used for a different booking. |
 | 422 | `appointment_already_started` | Cancellation requested after the start time. |
-| 413 / 415 / 405 | `payload_too_large` / `unsupported_media_type` / `method_not_allowed` | Framework-level rejections (booking body limit is 16 KB). |
+| 413 / 415 / 405 | `payload_too_large` / `unsupported_media_type` / `method_not_allowed` | Framework-level rejections. Request bodies are limited to 32 KB, and booking bodies to 16 KB. |
 | 500 | `internal_error` | Unexpected failure. No internal details are returned; use `traceId` to find the logs. |
 
 `notes_too_long` also exists in the application layer as a guard for non-HTTP callers; over HTTP the same condition is

@@ -290,11 +290,12 @@ Dashboards, alerts and the New Relic set-up: [OBSERVABILITY.md](OBSERVABILITY.md
 
 ## 16. Testing strategy
 
-89 automated tests: 37 unit tests for domain rules (slot grid, daylight saving, half-hour offsets, overlap edges, aggregate
-invariants, fingerprinting, layer dependencies) and 52 integration tests that drive the real HTTP pipeline against a fresh
+92 automated tests: 37 unit tests for domain rules (slot grid, daylight saving, half-hour offsets, overlap edges, aggregate
+invariants, fingerprinting, layer dependencies) and 55 integration tests that drive the real HTTP pipeline against a fresh
 SQLite file per test, with a fake clock. They cover every requirement, every error code, concurrency races, idempotent
-retries under load, transaction rollback, cancellation and the generic 500 path. Line coverage of hand-written code is
-97.6%. A mutation check proved the concurrency tests detect a disabled conflict handler. A shell smoke test exercises
+retries under load, transaction rollback, persistence across an application restart, cancellation and the 413/500 error
+paths. Line coverage of hand-written code is 97.5%. A mutation check proved the concurrency tests detect a disabled
+conflict handler. A shell smoke test exercises
 the running API in CI. Details: [TEST_STRATEGY.md](TEST_STRATEGY.md).
 
 ## 17. Trade-offs and future improvements

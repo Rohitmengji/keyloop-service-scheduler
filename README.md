@@ -15,7 +15,7 @@ an executable `.http` collection and a cURL smoke test.
 |---|---|
 | Stack | .NET 10 (LTS), ASP.NET Core Web API, EF Core 10, SQLite, OpenTelemetry, xUnit v3 |
 | System design | [docs/SYSTEM_DESIGN.md](docs/SYSTEM_DESIGN.md) |
-| Tests | 89 automated tests (37 unit, 52 integration against a real database) + 21-check live smoke test |
+| Tests | 92 automated tests (37 unit, 55 integration against a real database) + 21-check live smoke test |
 
 ## Quick start
 
@@ -31,7 +31,7 @@ dotnet run --project src/ServiceScheduler.Api
 - Guided walkthrough: [docs/DEMO_GUIDE.md](docs/DEMO_GUIDE.md), or run [samples/scheduler.http](samples/scheduler.http) in VS Code (REST Client), Visual Studio or Rider
 
 ```bash
-dotnet test                    # all 89 tests
+dotnet test                    # all 92 tests
 ./scripts/smoke-test.sh        # 21 end-to-end checks against the running API (needs curl and jq)
 ```
 
@@ -84,11 +84,11 @@ More in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 - **Unit tests (37):** slot grid, overlap edges, opening hours across daylight-saving changes and a +05:30 zone, the
   appointment's invariants and cancellation rules, request fingerprints, layer dependencies.
-- **Integration tests (52):** the real HTTP pipeline against a fresh SQLite file per test, with a fixed fake clock: every
+- **Integration tests (55):** the real HTTP pipeline against a fresh SQLite file per test, with a fixed fake clock: every
   error code, bay/technician/vehicle conflicts, back-to-back bookings, simultaneous bookings and retries, transaction
   rollback, cancellation, availability, health, OpenAPI document, the generic 500 path, business metrics.
 - The concurrency tests were checked by deliberately disabling conflict handling: they failed every time.
-- Line coverage of hand-written code: 97.6%.
+- Line coverage of hand-written code: 97.5%. Appointments are shown to survive an application restart.
 - **CI** (GitHub Actions): formatting, Release build with warnings and vulnerable packages as errors, EF migration drift
   check, tests with TRX and coverage reports, and a job that starts the API and runs the smoke test.
 
@@ -107,7 +107,9 @@ Strategy and scenario mapping: [docs/TEST_STRATEGY.md](docs/TEST_STRATEGY.md), [
 | [ASSUMPTIONS.md](docs/ASSUMPTIONS.md) / [TRADEOFFS.md](docs/TRADEOFFS.md) | What was assumed, what was traded off, what comes next |
 | [SECURITY.md](docs/SECURITY.md) / [OBSERVABILITY.md](docs/OBSERVABILITY.md) | Controls and gaps; logs, traces, metrics, New Relic |
 | [TEST_STRATEGY.md](docs/TEST_STRATEGY.md) / [RUNBOOK.md](docs/RUNBOOK.md) | Testing approach; configuration, migrations, troubleshooting |
-| [DEMO_GUIDE.md](docs/DEMO_GUIDE.md) / [IMPLEMENTATION_STATUS.md](docs/IMPLEMENTATION_STATUS.md) | Reviewer walkthrough; verified status |
+| [DEMO_GUIDE.md](docs/DEMO_GUIDE.md) / [IMPLEMENTATION_STATUS.md](docs/IMPLEMENTATION_STATUS.md) | Reviewer walkthrough; requirement-by-requirement status |
+| [FINAL_VERIFICATION_REPORT.md](docs/FINAL_VERIFICATION_REPORT.md) | Every check that was run, with its actual result |
+| [VIDEO_WALKTHROUGH.md](docs/VIDEO_WALKTHROUGH.md) | Presentation plan for the video submission |
 | [AI_COLLABORATION.md](docs/AI_COLLABORATION.md) | Detailed AI collaboration record and verification log |
 
 ## AI Collaboration Narrative
@@ -126,7 +128,9 @@ running API. Reading actual responses, not only status codes, exposed three cont
 caught a fourth that the smoke test had missed: every business error was going out as `application/json` instead of
 `application/problem+json`. Because a race test that passes proves little, the conflict handling was deliberately disabled
 to confirm the concurrency tests fail without it, then they were run repeatedly to rule out flakiness. Finally, every CI
-step was run locally with the same commands before pushing.
+step was run locally with the same commands before pushing. A last independent audit against a live server found one
+more defect that the in-memory tests could not see: oversized requests returned 500 instead of 413. It is now fixed and
+tested.
 
 **Ownership and quality.** The double-booking guarantee lives in the database, where a test bypasses the application
 entirely to prove it, so correctness does not depend on the generated code being perfect. Quality gates (formatting,

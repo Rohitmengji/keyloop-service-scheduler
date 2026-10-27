@@ -31,5 +31,5 @@ in parallel.
 
 ## Consequences
 
-- 89 tests run in about six seconds locally, in parallel, with no external dependencies.
+- 92 tests run in about six seconds locally, in parallel, with no external dependencies.
 - Test data is realistic and shared with the demo, so the walkthrough and the tests tell the same story.

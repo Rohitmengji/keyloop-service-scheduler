@@ -72,6 +72,10 @@ Chronological; every entry was observed in this session.
 | 14 | Pre-commit review | Found B5 and T3; both fixed |
 | 15 | Commits and a clean clone | All commits authored by the personal identity with no trailers; a fresh clone built with 0 warnings and passed 89 of 89 tests |
 | 16 | First GitHub Actions run (after the developer confirmed the push) | Both jobs green on Ubuntu: 0 warnings, no migration drift, 89 of 89 tests, smoke test 21 of 21 |
+| 17 | Developer's final-audit directive: independent security review in a separate read-only session | No confirmed vulnerabilities; two inaccurate statements in the review rejected after checking the code (see [SECURITY.md](SECURITY.md#review-performed-27-october-2026)) |
+| 18 | Gap review against the directive | No test for persistence across a restart or for `no_service_bays`; request bodies only limited on booking. Added two tests and a 32 KB server-wide limit |
+| 19 | Full reviewer-experience run (restore, format, build, vulnerability audit, migration drift, whitespace, live API, Swagger, smoke test, restart, size limits) | First attempt checked nothing: the script ran from the wrong directory (T4). Second attempt: all passed except a 20 KB body returning **500** (B6) |
+| 20 | After fixing B6 | Live 413; 92 of 92 tests; 97.5% line coverage of hand-written code; no vulnerable packages |
 
 ## Issues found and fixed
 
@@ -85,6 +89,7 @@ Product defects:
 | B3 | Validation errors were keyed by C# names (`StartTime`) while the contract is camelCase | Inspecting real responses | `SystemTextJsonValidationMetadataProvider` |
 | B4 | Every business error was sent as `application/json` instead of `application/problem+json`: a class-level `[Produces]` filter overwrote the content type. The smoke test (status codes and fields only) missed it | 26 failing integration tests | Removed the class-level filter; success media types declared per response |
 | B5 | The generated `.gitignore` did not exclude SQLite files, so the development database would have been committed | Pre-commit review | Added `*.db`, `*.db-shm`, `*.db-wal` |
+| B6 | A request body over the size limit returned 500 and was logged as an error, because the custom exception handler treated Kestrel's `BadHttpRequestException` as unexpected. The in-memory test server does not enforce Kestrel limits, so no test could see it | Live check against the real server | Keep the exception's status (413) with a problem document; test injects the exception directly |
 
 Test and tooling defects:
 
@@ -93,6 +98,7 @@ Test and tooling defects:
 | T1 | The database-constraint test failed inside EF Core's identity map before reaching SQLite, so it was not testing the constraint | Clear the change tracker between the two writes, as separate requests would |
 | T2 | The architecture test required "only `System.*` references", which coverage instrumentation breaks | Assert the forbidden references instead |
 | T3 | The smoke test's "outside opening hours" request (07:00 UTC) is a valid time during British Summer Time | Use 05:00 UTC, closed in both seasons |
+| T4 | The verification script changed into its own folder (`/tmp`) instead of the repository, so its first run checked nothing | Point it at the repository; the output was read rather than trusting the exit status |
 
 ## What was generated
 

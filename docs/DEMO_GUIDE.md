@@ -34,7 +34,7 @@ Open <http://localhost:5080/swagger>.
 ## 4. Proof (3 minutes)
 
 ```bash
-dotnet test                       # 89 tests, including simultaneous-request races against SQLite
+dotnet test                       # 92 tests, including simultaneous-request races against SQLite
 ./scripts/smoke-test.sh           # 21 end-to-end checks against the running API
 ```
 

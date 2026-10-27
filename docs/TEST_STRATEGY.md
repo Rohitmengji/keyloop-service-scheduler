@@ -18,7 +18,7 @@
 | Suite | Count | What it covers |
 |---|---|---|
 | `ServiceScheduler.UnitTests` | 37 | 15-minute grid, time ranges, overlap edges (back-to-back vs one-slot overlap), opening hours with daylight saving and a +05:30 zone, candidate starts on clock-change days, `Appointment` invariants and cancellation, request fingerprints, layer dependencies |
-| `ServiceScheduler.IntegrationTests` | 52 | Booking success and persistence, every validation and business-rule error code, bay/technician/vehicle conflicts, back-to-back bookings, simultaneous requests, simultaneous idempotent retries, transaction rollback, cancellation (including simultaneous), availability, catalogue, health, OpenAPI document, unknown routes, the generic 500 path, business metrics |
+| `ServiceScheduler.IntegrationTests` | 55 | Booking success and persistence (including across an application restart), every validation and business-rule error code, bay/technician/vehicle conflicts, back-to-back bookings, simultaneous requests, simultaneous idempotent retries, transaction rollback, cancellation (including simultaneous), availability, catalogue, health, OpenAPI document, unknown routes, the 413 and generic 500 paths, business metrics |
 | `scripts/smoke-test.sh` | 21 checks | The running API end to end with cURL, in CI after the build |
 
 The scenario-to-test mapping required by the assessment is in [REQUIREMENTS.md](REQUIREMENTS.md#assessment-test-checklist).
@@ -48,7 +48,7 @@ dotnet test -- --coverage --coverage-output-format cobertura   # line coverage
 ## Coverage
 
 Line coverage of hand-written production code (excluding generated migrations and compiler-generated sources) from the
-Release test run: **97.6%** overall — Domain 96.2%, Application 99.3%, Infrastructure 100%, Api 92.5%. Coverage is a
+Release test run: **97.5%** overall — Domain 96.2%, Application 99.5%, Infrastructure 100%, Api 91.9%. Coverage is a
 by-product, not a target; the uncovered lines are defensive guards (for example the invariant checks for impossible
 allocations) and the client-disconnect branch of the exception handler.
 
