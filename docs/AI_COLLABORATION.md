@@ -10,7 +10,7 @@ How GenAI was used to design, build and verify this service, kept factual. Summa
 | **Developer (Rohit Mengji)** | Chose the scenario and the layer, set the technology stack, provided the execution contract the agent worked to, set the Git identity rules, and owns every decision and the final code. |
 | **GitHub Copilot, agent mode in VS Code (Claude Opus 5.5 model)** | Researched current versions, proposed the design, wrote the code, tests, scripts, CI and documentation, and ran every verification step, inside the limits of the contract. |
 
-All work in this repository was produced in one working session on 26 October 2026.
+All work in this repository was produced in one continuous Copilot agent session on 26-27 October 2026.
 
 ## How the agent was directed
 
@@ -70,6 +70,7 @@ Chronological; every entry was observed in this session.
 | 12 | Formatting | `dotnet format --verify-no-changes` exit 0 |
 | 13 | CI emulation | Restore, format, Release build, migration drift check, tests with TRX and coverage, and the smoke job on a fresh database all passed |
 | 14 | Pre-commit review | Found B5 and T3; both fixed |
+| 15 | Commits and a clean clone | All commits authored by the personal identity with no trailers; a fresh clone built with 0 warnings and passed 89 of 89 tests |
 
 ## Issues found and fixed
 

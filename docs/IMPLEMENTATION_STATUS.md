@@ -1,6 +1,6 @@
 # Implementation status
 
-Last updated: 26 October 2026.
+Last updated: 27 October 2026.
 
 ## Phases
 
@@ -27,7 +27,7 @@ Last updated: 26 October 2026.
 | Persistent appointment record (FR3) | Implemented and tested |
 | Supporting: availability, read, cancel, idempotent retries (FR4-FR7) | Implemented and tested |
 
-## Latest local verification (26 October 2026, macOS arm64, SDK 10.0.403)
+## Latest local verification (26-27 October 2026, macOS arm64, SDK 10.0.403)
 
 | Check | Command | Result |
 |---|---|---|
@@ -39,6 +39,7 @@ Last updated: 26 October 2026.
 | Concurrency test sensitivity | conflict detector forced to `false` | 4 of 4 concurrency tests failed in 3 of 3 runs; reverted |
 | Flakiness | concurrency and cancellation classes run 10 times | 10 of 10 green |
 | Live API | `scripts/smoke-test.sh` against `dotnet run` on a fresh database | 21 of 21 checks passed; no errors in the API log |
+| Clean clone | `git clone` into an empty folder, then Release build and tests | 0 warnings; 89 passed, 0 failed |
 
 ## Outstanding
 
