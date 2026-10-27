@@ -95,7 +95,7 @@ RFC 9457 problem details with stable codes. See [SYSTEM_DESIGN.md](SYSTEM_DESIGN
 |---|---|---|---|
 | [40462693170](https://github.com/Rohitmengji/keyloop-service-scheduler/actions/runs/40462693170) | `3a30495` and earlier | Both jobs green: 0 warnings, no drift, 89/89 tests, smoke 21/21 | PASS |
 | Latest run on `e5a2df6` | `e5a2df6` | Both jobs green | PASS |
-| Run including this audit's changes | not yet pushed | — | NOT RUN |
+| [40465027142](https://github.com/Rohitmengji/keyloop-service-scheduler/actions/runs/40465027142) | `6980e65` (includes this audit's changes) | Both jobs green on Ubuntu: 0 warnings, 0 errors, no drift, 92/92 tests, smoke 21/21 | PASS |
 
 ## 10. Documentation status
 
@@ -116,6 +116,5 @@ was not run inside an IDE.
 ## 12. Remaining manual submission steps
 
 1. Review and sign off ADR-0003, ADR-0004 and ADR-0005.
-2. Push this audit's commits and confirm the CI run is green.
-3. Record the video using [VIDEO_WALKTHROUGH.md](VIDEO_WALKTHROUGH.md) (Loom), and check it is viewable with the link.
-4. Reply to the recruiter with the repository URL and the video link before Friday 30 October 2026.
+2. Record the video using [VIDEO_WALKTHROUGH.md](VIDEO_WALKTHROUGH.md) (Loom), and check it is viewable with the link.
+3. Reply to the recruiter with the repository URL and the video link before Friday 30 October 2026.

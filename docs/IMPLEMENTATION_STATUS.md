@@ -38,7 +38,7 @@ Status values: **Implemented and verified**, **Implemented but not verified**, *
 | Client stub: OpenAPI, Swagger UI, cURL | Implemented and verified | `/openapi/v1.json` (OpenAPI 3.1.1, 6 paths), Swagger UI HTTP 200, `scripts/smoke-test.sh` 21/21 |
 | Client stub: `samples/scheduler.http` | Implemented but not verified | Not executed in an IDE; the same requests are exercised by the smoke test |
 | README with build, run, test and AI Collaboration Narrative | Implemented and verified | Followed from a clean clone |
-| Test suite for core business logic | Implemented and verified | 92 tests pass locally; GitHub Actions results in the verification report |
+| Test suite for core business logic | Implemented and verified | 92 tests pass locally and on GitHub Actions (run 40465027142) |
 | Video walkthrough (5-10 minutes) | Not implemented | Developer records it; plan in [VIDEO_WALKTHROUGH.md](VIDEO_WALKTHROUGH.md) |
 
 ## Non-functional

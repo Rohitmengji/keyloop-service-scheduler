@@ -76,6 +76,7 @@ Chronological; every entry was observed in this session.
 | 18 | Gap review against the directive | No test for persistence across a restart or for `no_service_bays`; request bodies only limited on booking. Added two tests and a 32 KB server-wide limit |
 | 19 | Full reviewer-experience run (restore, format, build, vulnerability audit, migration drift, whitespace, live API, Swagger, smoke test, restart, size limits) | First attempt checked nothing: the script ran from the wrong directory (T4). Second attempt: all passed except a 20 KB body returning **500** (B6) |
 | 20 | After fixing B6 | Live 413; 92 of 92 tests; 97.5% line coverage of hand-written code; no vulnerable packages |
+| 21 | Audit commits pushed (developer confirmed) | GitHub Actions run 40465027142 green: 0 warnings, no drift, 92 of 92 tests, smoke 21 of 21 |
 
 ## Issues found and fixed
 
