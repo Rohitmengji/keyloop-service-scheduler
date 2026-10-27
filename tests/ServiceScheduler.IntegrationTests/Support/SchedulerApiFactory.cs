@@ -14,12 +14,25 @@ namespace ServiceScheduler.IntegrationTests.Support;
 /// Hosts the real API in memory against its own SQLite file, migrated and seeded exactly as in development,
 /// with a controllable clock so date-based rules are deterministic.
 /// </summary>
-public sealed class SchedulerApiFactory : WebApplicationFactory<Program>
+/// <param name="databasePath">Reuse an existing database file (to simulate a restart); the caller then owns its deletion.</param>
+public sealed class SchedulerApiFactory(string? databasePath = null) : WebApplicationFactory<Program>
 {
     /// <summary>Sunday 1 November 2026, 12:00 UTC. The UK is on GMT, so London local time equals UTC.</summary>
     public static readonly DateTimeOffset StartTime = new(2026, 11, 1, 12, 0, 0, TimeSpan.Zero);
 
-    private readonly string _databasePath = Path.Combine(Path.GetTempPath(), $"scheduler-tests-{Guid.NewGuid():N}.db");
+    private readonly string _databasePath = databasePath ?? NewDatabasePath();
+    private readonly bool _ownsDatabase = databasePath is null;
+
+    public static string NewDatabasePath() => Path.Combine(Path.GetTempPath(), $"scheduler-tests-{Guid.NewGuid():N}.db");
+
+    public static void DeleteDatabase(string path)
+    {
+        SqliteConnection.ClearAllPools();
+        foreach (var suffix in new[] { string.Empty, "-wal", "-shm" })
+        {
+            File.Delete(path + suffix);
+        }
+    }
 
     public FakeTimeProvider Clock { get; } = new(StartTime);
 
@@ -61,10 +74,13 @@ public sealed class SchedulerApiFactory : WebApplicationFactory<Program>
     public override async ValueTask DisposeAsync()
     {
         await base.DisposeAsync();
-        SqliteConnection.ClearAllPools();
-        foreach (var suffix in new[] { string.Empty, "-wal", "-shm" })
+        if (_ownsDatabase)
         {
-            File.Delete(_databasePath + suffix);
+            DeleteDatabase(_databasePath);
+        }
+        else
+        {
+            SqliteConnection.ClearAllPools();
         }
     }
 }

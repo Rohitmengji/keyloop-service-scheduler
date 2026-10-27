@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
+using ServiceScheduler.Domain.Dealerships;
 using ServiceScheduler.Domain.Scheduling;
 using ServiceScheduler.Infrastructure.Persistence;
 using ServiceScheduler.IntegrationTests.Support;
@@ -166,6 +167,22 @@ public sealed class BookingTests : ApiTestBase
         Assert.Equal("2026-11-02T09:30:00+05:30", appointment.Text("start"));
         Assert.Equal("Asia/Kolkata", appointment.Text("timeZone"));
         Assert.Equal("Priya Nair", appointment.Text("technician.name"));
+    }
+
+    [Fact]
+    public async Task A_dealership_without_active_bays_cannot_take_bookings()
+    {
+        var emptyDealership = Guid.NewGuid();
+        await Factory.QueryAsync(db =>
+        {
+            db.Add(new Dealership(emptyDealership, "Empty Motors", "Europe/London", new TimeOnly(8, 0), new TimeOnly(18, 0)));
+            return db.SaveChangesAsync(Ct);
+        });
+
+        using var response = await BookAsync(Booking(
+            DemoData.Customers.SamTaylor, DemoData.Vehicles.SamFocus, DemoData.ServiceTypes.OilChange, Monday(9), dealershipId: emptyDealership));
+
+        await AssertProblemAsync(response, HttpStatusCode.UnprocessableEntity, "no_service_bays");
     }
 
     [Fact]
