@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics.Metrics;
 using System.Net;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceScheduler.Application.Catalog;
@@ -78,6 +79,19 @@ public sealed class ApiSurfaceTests : ApiTestBase
         var problem = (await AssertProblemAsync(response, HttpStatusCode.InternalServerError, "internal_error")).ToString();
         Assert.DoesNotContain("hunter2", problem, StringComparison.Ordinal);
         Assert.DoesNotContain("InvalidOperationException", problem, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Server_detected_client_errors_keep_their_status_instead_of_becoming_500()
+    {
+        // The in-memory test server does not enforce Kestrel's body limits, so raise Kestrel's exception directly.
+        await using var tooLarge = Factory.WithWebHostBuilder(builder => builder.ConfigureTestServices(services =>
+            services.AddScoped<CatalogQueries>(_ => throw new BadHttpRequestException("Request body too large.", StatusCodes.Status413PayloadTooLarge))));
+        using var client = tooLarge.CreateClient();
+
+        using var response = await client.GetAsync("/api/v1/service-types", Ct);
+
+        await AssertProblemAsync(response, HttpStatusCode.RequestEntityTooLarge, "payload_too_large");
     }
 
     [Fact]

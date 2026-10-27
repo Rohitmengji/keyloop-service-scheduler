@@ -17,6 +17,18 @@ internal sealed partial class UnhandledExceptionHandler(
             return true;
         }
 
+        if (exception is BadHttpRequestException badRequest)
+        {
+            // Server-detected client errors (e.g. 413 body too large) keep their status instead of becoming 500s.
+            LogBadRequest(logger, httpContext.Request.Method, httpContext.Request.Path.Value, badRequest.StatusCode);
+            httpContext.Response.StatusCode = badRequest.StatusCode;
+            return await problemDetails.TryWriteAsync(new ProblemDetailsContext
+            {
+                HttpContext = httpContext,
+                ProblemDetails = { Status = badRequest.StatusCode, Title = "The request could not be processed." },
+            });
+        }
+
         LogUnhandledException(logger, exception, httpContext.Request.Method, httpContext.Request.Path.Value);
         httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
         return await problemDetails.TryWriteAsync(new ProblemDetailsContext
@@ -31,4 +43,7 @@ internal sealed partial class UnhandledExceptionHandler(
 
     [LoggerMessage(EventId = 3002, Level = LogLevel.Debug, Message = "Client aborted {Method} {Path}")]
     private static partial void LogRequestAborted(ILogger logger, string method, string? path);
+
+    [LoggerMessage(EventId = 3003, Level = LogLevel.Information, Message = "Rejected {Method} {Path} with {StatusCode}")]
+    private static partial void LogBadRequest(ILogger logger, string method, string? path, int statusCode);
 }

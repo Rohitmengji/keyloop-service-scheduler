@@ -10,7 +10,12 @@ using ServiceScheduler.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.ConfigureKestrel(kestrel => kestrel.AddServerHeader = false);
+builder.WebHost.ConfigureKestrel(kestrel =>
+{
+    kestrel.AddServerHeader = false;
+    // No endpoint takes more than a small JSON body (booking is capped lower still at 16 KB).
+    kestrel.Limits.MaxRequestBodySize = 32 * 1024;
+});
 builder.Logging.Configure(logging =>
     logging.ActivityTrackingOptions = ActivityTrackingOptions.TraceId | ActivityTrackingOptions.SpanId);
 
