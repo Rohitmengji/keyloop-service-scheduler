@@ -16,7 +16,7 @@ Last updated: 27 October 2026.
 | 7. CI and documentation | Done | `.github/workflows/ci.yml` emulated locally step by step; documentation set complete |
 | 8. Verification | Done locally | See below |
 | 9. Demo preparation | Done | [DEMO_GUIDE.md](DEMO_GUIDE.md), `samples/scheduler.http`, `scripts/smoke-test.sh` |
-| 10. GitHub delivery | **Pending** | Awaiting the developer's confirmation of repository name and visibility before pushing |
+| 10. GitHub delivery | Done | Pushed to the personal account; first CI run green (see below) |
 
 ## Requirement status
 
@@ -41,10 +41,14 @@ Last updated: 27 October 2026.
 | Live API | `scripts/smoke-test.sh` against `dotnet run` on a fresh database | 21 of 21 checks passed; no errors in the API log |
 | Clean clone | `git clone` into an empty folder, then Release build and tests | 0 warnings; 89 passed, 0 failed |
 
+## Continuous integration (GitHub Actions, Ubuntu)
+
+First run on 27 October 2026 ([run 40462693170](https://github.com/Rohitmengji/keyloop-service-scheduler/actions/runs/40462693170)):
+both jobs succeeded. Build 0 warnings and 0 errors; no migration drift; 89 of 89 tests passed; the smoke test passed
+21 of 21 checks against the API started on the runner.
+
 ## Outstanding
 
-- [ ] Push to GitHub (personal account) after confirmation, then confirm the first CI run is green. **CI has not run on
-      GitHub yet**; every step was run locally with the same commands.
 - [ ] Developer sign-off on the agent-proposed decisions in ADR-0003, ADR-0004 and ADR-0005.
 - [ ] Record the 5-10 minute video walkthrough.
 

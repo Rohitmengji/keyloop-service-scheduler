@@ -48,7 +48,7 @@ The agent's output was treated as untrusted until checked by something other tha
 - **The running system:** a smoke test against the real API, plus manual inspection of actual JSON responses, not just status codes.
 - **Tests that can fail:** the concurrency tests were checked by deliberately disabling conflict handling (they failed),
   then run repeatedly to rule out flakiness.
-- **The real pipeline:** every CI step was executed locally with the same commands before any push.
+- **The real pipeline:** every CI step was executed locally with the same commands before the first push, then confirmed on GitHub Actions.
 
 ## Verification log
 
@@ -71,6 +71,7 @@ Chronological; every entry was observed in this session.
 | 13 | CI emulation | Restore, format, Release build, migration drift check, tests with TRX and coverage, and the smoke job on a fresh database all passed |
 | 14 | Pre-commit review | Found B5 and T3; both fixed |
 | 15 | Commits and a clean clone | All commits authored by the personal identity with no trailers; a fresh clone built with 0 warnings and passed 89 of 89 tests |
+| 16 | First GitHub Actions run (after the developer confirmed the push) | Both jobs green on Ubuntu: 0 warnings, no migration drift, 89 of 89 tests, smoke test 21 of 21 |
 
 ## Issues found and fixed
 
@@ -101,6 +102,5 @@ above.
 
 ## Limits of the verification
 
-- CI has not yet run on GitHub; it was emulated locally with identical commands.
 - No load test; no run against PostgreSQL or SQL Server; OTLP export not tested against a real backend.
 - Decisions marked "awaiting developer sign-off" have not yet been reviewed by the developer.
